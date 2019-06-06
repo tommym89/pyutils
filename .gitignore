@@ -4,3 +4,6 @@ venv
 conf/bvprofile.json
 *.pyc
 app.py
+build
+dist
+mcneelat_pyutils.egg-info
