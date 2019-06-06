@@ -3,3 +3,4 @@
 venv
 conf/bvprofile.json
 *.pyc
+app.py
