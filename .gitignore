@@ -1,0 +1,5 @@
+.gitattributes
+.idea
+venv
+conf/bvprofile.json
+*.pyc
