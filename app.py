@@ -1,5 +1,5 @@
 from com.mcneelat.pyutils.anomali import Anomali
-from com.mcneelat.pyutils import load_conf
+from com.mcneelat.pyutils.confutils import load_conf
 
 conf_file = 'C:\\Users\\tmcne003\\Documents\\PyCharmProjects\\pyutils\\conf\\bvprofile.json'
 conf_data = load_conf(conf_file)
