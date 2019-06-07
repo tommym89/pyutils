@@ -3,6 +3,9 @@ import requests
 
 
 class Anomali:
+    """Class containing handy methods common to working with the Anomali ThreatStream API."""
+
+    """Map of general IOC categories to the most interesting IOC types."""
     ICATEGORY_MAP = {
         "domain": "apt_domain,c2_domain,exfil_domain,exploit_domain,mal_domain",
         "ip": "apt_ip,c2_ip,exfil_ip,exploit_ip,mal_ip",
@@ -11,6 +14,14 @@ class Anomali:
 
     def __init__(self, api_user, api_key, min_confidence=50, last_modified_days=90,
                  results_limit=0):
+        """
+        Initialize class.
+        :param api_user: API username
+        :param api_key: API secret key
+        :param min_confidence: minimum confidence for IOCs to look for
+        :param last_modified_days: number of days ago IOCs must have been modified in order to include in results
+        :param results_limit: limit of results from API queries; 0 = unlimited
+        """
         self.base_url = "https://api.threatstream.com"
         self.intel_url_part = "/api/v2/intelligence/"
         self.creds_url_part = "username=%s&api_key=%s" % (api_user, api_key)
@@ -22,6 +33,11 @@ class Anomali:
         )
 
     def is_threat(self, test_object):
+        """
+        Check if an indicator is malicious (i.e. an active IOC in ThreatStream)
+        :param test_object: indicator to check
+        :return: True if malicious, False if not found active in ThreatStream
+        """
         last_modified = (dt.today() - timedelta(days=self.last_modified_days)).strftime("%Y-%m-%dT00:00:00Z")
         next_url = "%s&modified_ts__gte=%s&value=%s" % (self.next_url_base, last_modified, test_object)
         try:
@@ -36,6 +52,12 @@ class Anomali:
         return True
 
     def get_iocs(self, icategory, severity="high"):
+        """
+        Get a list of IOCs and their details from a specified category.
+        :param icategory: domain, ip, or url
+        :param severity: low, medium, high, very-high
+        :return: list of IOCs and their details
+        """
         last_modified = (dt.today() - timedelta(days=self.last_modified_days)).strftime("%Y-%m-%dT00:00:00Z")
         next_url = "%s&modified_ts__gte=%s&meta.severity__contains=%s&itype=%s" % (
             self.next_url_base, last_modified, severity, Anomali.ICATEGORY_MAP[icategory]
