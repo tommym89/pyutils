@@ -2,12 +2,12 @@ from setuptools import find_packages, setup
 
 # The text of the README file
 with open("README.md") as file:
-    README = file.readlines()
+    README = file.read()
 
 # This call to setup() does all the work
 setup(
     name="mcneelat-pyutils",
-    version="0.1.1",
+    version="0.1.3",
     description="A collection of helpful Python utilities to simplify dealing with databases, Kafka, and more.",
     long_description=README,
     long_description_content_type="text/markdown",
