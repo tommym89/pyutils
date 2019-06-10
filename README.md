@@ -1,5 +1,5 @@
 # pyutils
-* modules are in package com.mcneelat.pyutils
+* modules are in package mcneelat.pyutils
     * anomali
     * confutils
     * dbutils
