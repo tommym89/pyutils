@@ -89,7 +89,6 @@ class ThreatStream(AbstractLogUtils):
             except ValueError:
                 self.log("Warning, call to URL '%s' resulted in no JSON object response." % self.base_url + next_url)
                 break
-            for entry in json_data.get('objects'):
-                results.append(entry)
+            results.extend(json_data.get('objects'))
             next_url = json_data.get('meta').get('next')
         return results
