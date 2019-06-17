@@ -3,7 +3,7 @@ from mcneelat.pyutils.confutils import AbstractLogUtils
 import requests
 
 
-class Anomali(AbstractLogUtils):
+class ThreatStream(AbstractLogUtils):
     """Class containing handy methods common to working with the Anomali ThreatStream API."""
 
     """Map of general IOC categories to the most interesting IOC types."""
@@ -32,7 +32,7 @@ class Anomali(AbstractLogUtils):
         self.next_url_base = "%s?%s&status=active&confidence__gte=%i&limit=%i" % (
             self.intel_url_part, self.creds_url_part, self.min_confidence, self.results_limit
         )
-        super(Anomali, self).__init__(verbose)
+        AbstractLogUtils.__init__(self, verbose)
 
     def is_threat(self, test_object):
         """
@@ -45,7 +45,6 @@ class Anomali(AbstractLogUtils):
         try:
             json_data = requests.get(self.base_url + next_url).json()
         except ValueError:
-            # print("Warning, call to URL '%s' resulted in no JSON object response." % (self.base_url + next_url))
             return False
         try:
             json_data.get('objects')[0]
@@ -62,7 +61,7 @@ class Anomali(AbstractLogUtils):
         """
         last_modified = (dt.today() - timedelta(days=self.last_modified_days)).strftime("%Y-%m-%dT00:00:00Z")
         next_url = "%s&modified_ts__gte=%s&meta.severity__contains=%s&itype=%s" % (
-            self.next_url_base, last_modified, severity, Anomali.ICATEGORY_MAP[icategory]
+            self.next_url_base, last_modified, severity, ThreatStream.ICATEGORY_MAP[icategory]
         )
         self.log("Starting to gather IOCs...")
         results = []

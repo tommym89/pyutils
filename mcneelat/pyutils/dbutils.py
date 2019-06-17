@@ -1,16 +1,19 @@
+from mcneelat.pyutils.confutils import AbstractLogUtils
 import psycopg2
 
 
-class AbstractDBUtils(object):
+class AbstractDBUtils(AbstractLogUtils):
     """Class containing handy methods common to working with any SQL database."""
 
-    def __init__(self, dbconn):
+    def __init__(self, dbconn, verbose=True):
         """
         Initialize class.
         :param dbconn: database connection object
         """
         self.dbconn = dbconn
+        self.verbose = verbose
         self.cursor = self.dbconn.cursor()
+        AbstractLogUtils.__init__(self, verbose)
 
     def select(self, sql):
         """
@@ -52,6 +55,7 @@ class AbstractDBUtils(object):
         Close and database resources.
         :return: None
         """
+        self.log("[*] Closing database connection...")
         self.cursor.close()
         self.dbconn.close()
 
@@ -59,7 +63,7 @@ class AbstractDBUtils(object):
 class PGUtils(AbstractDBUtils):
     """Class to initialize a connection to a PostgreSQL database."""
 
-    def __init__(self, conf_data, schema=None):
+    def __init__(self, conf_data, schema=None, verbose=True):
         """
         Initialize class.
         :param conf_data: configuration data to initialize database
@@ -67,5 +71,7 @@ class PGUtils(AbstractDBUtils):
         """
         self.conf_data = conf_data
         self.schema = schema
+        if verbose:
+            print("[*] Connecting to database...")
         dbconn = psycopg2.connect(**conf_data["DB_CONN_INFO"])
-        super(PGUtils, self).__init__(dbconn)
+        AbstractDBUtils.__init__(self, dbconn, verbose)

@@ -13,7 +13,7 @@ class KafkaBuilder(AbstractLogUtils):
         :param bootstrap_servers: list of bootstrap servers to connect to
         """
         self.bootstrap_servers = bootstrap_servers
-        super(KafkaBuilder, self).__init__(verbose)
+        AbstractLogUtils.__init__(self, verbose)
 
     def get_consumer(self, topic, is_json=False):
         """
