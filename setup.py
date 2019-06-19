@@ -7,7 +7,7 @@ with open("README.md") as file:
 # This call to setup() does all the work
 setup(
     name="mcneelat-pyutils",
-    version="1.2.0",
+    version="1.2.1",
     description="A collection of helpful Python utilities to simplify dealing with databases, Kafka, and more.",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -23,5 +23,5 @@ setup(
     ],
     packages=find_packages(),
     include_package_data=True,
-    install_requires=["kafka-python", "psycopg2-binary", "requests"],
+    install_requires=["kafka-python", "psycopg2-binary", "python-ldap", "requests"],
 )
