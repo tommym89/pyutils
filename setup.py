@@ -16,10 +16,12 @@ setup(
     author_email="mcneelat@gmail.com",
     license="GPLv3",
     classifiers=[
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
     ],
     packages=find_packages(),
     include_package_data=True,
-    install_requires=["dnspython3", "kafka-python", "psycopg2-binary", "python-ldap", "requests"],
+    install_requires=["dnspython", "kafka-python", "psycopg2-binary", "python-ldap", "requests"],
 )
