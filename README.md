@@ -3,4 +3,7 @@
     * anomali
     * confutils
     * dbutils
+    * directoryutils
+    * dnsutils
+    * fileutils
     * kafkautils

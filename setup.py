@@ -7,7 +7,7 @@ with open("README.md") as file:
 # This call to setup() does all the work
 setup(
     name="mcneelat-pyutils",
-    version="1.3.0",
+    version="1.4.0",
     description="A collection of helpful Python utilities to simplify dealing with databases, Kafka, and more.",
     long_description=README,
     long_description_content_type="text/markdown",
