@@ -78,7 +78,7 @@ class ThreatStream(AbstractLogUtils):
         :return: list of IOCs and their details
         """
         last_modified = (dt.today() - timedelta(days=self.last_modified_days)).strftime("%Y-%m-%dT00:00:00Z")
-        next_url = "%s&modified_ts__gte=%s&meta.severity__contains=%s&itype=%s" % (
+        next_url = "%s&modified_ts__gte=%s&meta.severity__gte=%s&itype=%s" % (
             self.next_url_base, last_modified, severity, ThreatStream.ICATEGORY_MAP[icategory]
         )
         self.log("[*] Starting to gather IOCs...")
