@@ -10,8 +10,8 @@ class DNSResolver:
         Initialize class.
         :param nameservers: list of nameservers to query
         """
-        self.dnsResolver = dns.resolver.Resolver()
-        self.dnsResolver.nameservers = nameservers
+        self.dns_resolver = dns.resolver.Resolver()
+        self.dns_resolver.nameservers = nameservers
 
     def change_nameservers(self, nameservers):
         """
@@ -19,7 +19,7 @@ class DNSResolver:
         :param nameservers: list of nameservers to query
         :return: None
         """
-        self.dnsResolver.nameservers = nameservers
+        self.dns_resolver.nameservers = nameservers
 
     def lookup(self, queryobj, qtype='A'):
         """
@@ -32,7 +32,7 @@ class DNSResolver:
             queryobj = '.'.join(reversed(queryobj.split('.'))) + ".in-addr.arpa"
             qtype = 'PTR'
         try:
-            answer = self.dnsResolver.query(queryobj, qtype)
+            answer = self.dns_resolver.query(queryobj, qtype)
             return answer
         except dns.exception.DNSException:
             return False
