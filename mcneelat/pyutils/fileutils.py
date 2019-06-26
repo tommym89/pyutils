@@ -7,7 +7,8 @@ class CSVUtils:
     def __init__(self):
         pass
 
-    def get_headers(self, infile):
+    @staticmethod
+    def get_headers(infile):
         """
         Get a dictionary where k = header name, v = column index.
         :param infile: CSV file to read from
@@ -22,7 +23,8 @@ class CSVUtils:
                 break
         return headers_map
 
-    def read_csv(self, infile, has_headers=True, selected_columns=None):
+    @staticmethod
+    def read_csv(infile, has_headers=True, selected_columns=None):
         """
         Read all lines in a CSV file to a list of lists.
         :param infile: CSV file to read from
@@ -33,7 +35,7 @@ class CSVUtils:
         headers_map = None
         l1 = False
         if has_headers:
-            headers_map = self.get_headers(infile)
+            headers_map = CSVUtils.get_headers(infile)
             l1 = True
         lines = []
         with open(infile) as csvfile:
@@ -47,16 +49,16 @@ class CSVUtils:
                 if len(line):
                     # pull only selected columns
                     if selected_columns:
-                        l = []
+                        selected_fields = []
                         for c in selected_columns:
                             if isinstance(selected_columns[0], str):
                                 # pull selected columns by header
-                                l.append(line[headers_map[c]])
+                                selected_fields.append(line[headers_map[c]])
                             else:
                                 # pull selected columns by index
-                                l.append(line[c])
-                        if len(l):
-                            lines.append(l)
+                                selected_fields.append(line[c])
+                        if len(selected_fields):
+                            lines.append(selected_fields)
                     else:
                         if len(line):
                             lines.append(line)

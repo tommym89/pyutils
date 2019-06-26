@@ -5,6 +5,7 @@ def load_conf(conf_file, verbose=True):
     """
     Load a configuration file (in JSON format) into a dictionary object.
     :param conf_file: path to configuration file
+    :param verbose: whether or not to print detailed log message
     :return: dictionary object with directives read from conf_file
     """
     if verbose:
@@ -18,6 +19,10 @@ class AbstractLogUtils(object):
     """Class containing handy methods for logging purposes."""
 
     def __init__(self, verbose):
+        """
+        Initialize class.
+        :param verbose: if True, the log method will print out whatever message is sent to it
+        """
         self.verbose = verbose
 
     def log(self, msg):

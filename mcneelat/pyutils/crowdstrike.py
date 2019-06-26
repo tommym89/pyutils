@@ -27,8 +27,8 @@ class FalconIntelligence:
         :param test_object: object to search for
         :return: list of dictionaries (usually only one in the list) containing IOC details
         """
-        filter = 'indicator?equal=%s' % test_object
-        ioc_url = '%s%s%s' % (self.base_url, self.ioc_url_part, filter)
+        ioc_filter = 'indicator?equal=%s' % test_object
+        ioc_url = '%s%s%s' % (self.base_url, self.ioc_url_part, ioc_filter)
         json_data = requests.get(ioc_url, headers=self.headers).json()
         return json_data
 
@@ -42,12 +42,12 @@ class FalconIntelligence:
         :return: list of IOCs
         """
         if not filters:
-            filter = 'type?equal=%s&perPage=%s' % (ioc_type, results_per_page)
+            ioc_filter = 'type?equal=%s&perPage=%s' % (ioc_type, results_per_page)
         else:
-            filter = '?type.match=%s&perPage=%s' % (ioc_type, results_per_page)
+            ioc_filter = '?type.match=%s&perPage=%s' % (ioc_type, results_per_page)
             for k in filters.keys():
-                filter += '&%s.match=%s' % (k, filters[k])
-        ioc_url = '%s%s%s' % (self.base_url, self.ioc_url_part, filter)
+                ioc_filter += '&%s.match=%s' % (k, filters[k])
+        ioc_url = '%s%s%s' % (self.base_url, self.ioc_url_part, ioc_filter)
         json_data = requests.get(ioc_url, headers=self.headers).json()
         if not details:
             iocs = []

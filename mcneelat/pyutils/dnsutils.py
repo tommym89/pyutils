@@ -5,7 +5,7 @@ import re
 class DNSResolver:
     """This class simplifies the process of performing a recursive DNS query against a nameserver."""
 
-    def __init__(self, nameservers=['8.8.8.8', '8.8.4.4']):
+    def __init__(self, nameservers=('8.8.8.8', '8.8.4.4')):
         """
         Initialize class.
         :param nameservers: list of nameservers to query
@@ -25,6 +25,7 @@ class DNSResolver:
         """
         Perform a DNS query (by default we search for an 'A' record.)
         :param queryobj: domain name to search for
+        :param qtype: type of record to search for; default is A
         :return: DNS response or False if no results
         """
         if re.match(r'^\d{1,3}(\.\d{1,3}){3}$', queryobj.strip()):

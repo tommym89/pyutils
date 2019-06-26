@@ -9,6 +9,7 @@ class AbstractDBUtils(AbstractLogUtils):
         """
         Initialize class.
         :param dbconn: database connection object
+        :param verbose: whether or not to print log messages
         """
         self.dbconn = dbconn
         self.verbose = verbose

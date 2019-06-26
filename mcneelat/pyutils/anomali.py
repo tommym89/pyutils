@@ -23,6 +23,7 @@ class ThreatStream(AbstractLogUtils):
         :param last_modified_days: number of days ago IOCs must have been modified in order to include in results
         :param results_limit: limit of results from API queries; 0 = unlimited
         """
+        self.next_url_base = None
         self.base_url = "https://api.threatstream.com"
         self.intel_url_part = "/api/v2/intelligence/"
         self.creds_url_part = "username=%s&api_key=%s" % (api_user, api_key)
