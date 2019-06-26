@@ -13,10 +13,13 @@ class PyNetAddr(object):
         :param address: single IP address, or address and mask in CIDR notation (i.e. 10.0.0.0/24)
         :param mask: subnet mask in full notation (i.e. 255.255.255.0); None if address param is in CIDR notation
         """
+        self.address, self.broadcast, self.cidr_mask, self.mask, self.network, self.range = (
+            None, None, None, None, None, None)
         if not self.set_new(address, mask):
             raise ValueError('Invalid address or subnet mask!')
 
-    def is_valid_addr(self, address):
+    @staticmethod
+    def is_valid_addr(address):
         """
         Check if this is a valid IP address or network.
         :param address: IP address or network
@@ -74,10 +77,9 @@ class PyNetAddr(object):
         i = len(mask_splitter) - 1
         breaker = False
         while i >= 0 and not breaker:
-            network_octet = format(int(str(bin(int(network_splitter[i])))[2:], 2), \
+            network_octet = format(int(str(bin(int(network_splitter[i])))[2:], 2),
                                    '{fill}{width}b'.format(width=8, fill=0))
-            mask_octet = format(int(str(bin(int(mask_splitter[i])))[2:], 2), \
-                                '{fill}{width}b'.format(width=8, fill=0))
+            mask_octet = format(int(str(bin(int(mask_splitter[i])))[2:], 2), '{fill}{width}b'.format(width=8, fill=0))
 
             j = len(mask_octet) - 1
             tmp_octet = list(network_octet)
@@ -109,8 +111,7 @@ class PyNetAddr(object):
         mask_splitter = mask.split('.')
         self.cidr_mask = 0
         for i in range(0, len(mask_splitter)):
-            mask_octet = format(int(str(bin(int(mask_splitter[i])))[2:], 2), \
-                                '{fill}{width}b'.format(width=8, fill=0))
+            mask_octet = format(int(str(bin(int(mask_splitter[i])))[2:], 2), '{fill}{width}b'.format(width=8, fill=0))
             self.cidr_mask += mask_octet.count('1')
 
     def calc_full_mask(self, cidr_mask):
@@ -120,8 +121,8 @@ class PyNetAddr(object):
         :return: None
         """
         cidr_bits = '1' * cidr_mask + '0' * (32 - cidr_mask)
-        cidr_bits_arr = [str(int(cidr_bits[:8], 2)), str(int(cidr_bits[8:16], 2)), \
-                         str(int(cidr_bits[16:24], 2)), str(int(cidr_bits[24:], 2))]
+        cidr_bits_arr = [str(int(cidr_bits[:8], 2)), str(int(cidr_bits[8:16], 2)), str(int(cidr_bits[16:24], 2)),
+                         str(int(cidr_bits[24:], 2))]
         self.mask = '.'.join(cidr_bits_arr)
 
     @staticmethod
@@ -137,14 +138,10 @@ class PyNetAddr(object):
             return False
         if network1.network == network2.network:
             return True
-        network1_splitter = network1.network.split('.')
         mask1_splitter = network1.mask.split('.')
-        network2_splitter = network2.network.split('.')
         mask2_splitter = network2.mask.split('.')
-        total1 = int(mask1_splitter[0]) + int(mask1_splitter[1]) \
-                 + int(mask1_splitter[2]) + int(mask1_splitter[3])
-        total2 = int(mask2_splitter[0]) + int(mask2_splitter[1]) \
-                 + int(mask2_splitter[2]) + int(mask2_splitter[3])
+        total1 = int(mask1_splitter[0]) + int(mask1_splitter[1]) + int(mask1_splitter[2]) + int(mask1_splitter[3])
+        total2 = int(mask2_splitter[0]) + int(mask2_splitter[1]) + int(mask2_splitter[2]) + int(mask2_splitter[3])
         if total1 < total2:
             netaddr3 = PyNetAddr(network2.network, network1.mask)
             # print "Network 1 is: %s, network 2 with same subnet is: %s" % \
@@ -193,7 +190,7 @@ class PyNetAddr(object):
         :param mask: subnet mask in full notation (i.e. 255.255.255.0); None if address param is in CIDR notation
         :return: True if successful, False otherwise
         """
-        if self.is_valid_addr(address.split("/")[0]):
+        if PyNetAddr.is_valid_addr(address.split("/")[0]):
             self.address = address.split("/")[0]
         else:
             print("Error, invalid IP address!")
