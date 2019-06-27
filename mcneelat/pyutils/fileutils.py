@@ -1,4 +1,6 @@
 import csv
+import os
+import tarfile
 
 
 class CSVUtils:
@@ -63,3 +65,31 @@ class CSVUtils:
                         if len(line):
                             lines.append(line)
         return lines, headers_map
+
+
+class ArchiveUtils:
+    """This class simplifies the process of working with archive type files (i.e. tar, zip)."""
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def create_tar(sources, output_file, compression=None):
+        """
+        Write a set of files and/or directories to a tar file.
+        :param sources: list of files and/or directories to add to the archive
+        :param output_file: file to write archived contents to
+        :param compression: options are None (which is the default), gz, or bz2
+        :return: None
+        """
+        write_mode = 'w:'
+        if compression is not None:
+            write_mode = 'w:%s' % compression
+        with tarfile.open(output_file, write_mode) as tar:
+            for source in sources:
+                if os.path.isdir(source):
+                    tar.add(source, arcname=os.path.basename(source))
+                elif os.path.isfile(source):
+                    tar.add(source)
+                else:
+                    print("[*] Warning, not adding nonexistent object %s to archive..." % source)
