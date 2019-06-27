@@ -1,5 +1,7 @@
 from datetime import datetime as dt, timedelta
+import json
 from mcneelat.pyutils.confutils import AbstractLogUtils
+from mcneelat.pyutils.fileutils import CSVUtils
 import requests
 
 
@@ -26,7 +28,9 @@ class ThreatStream(AbstractLogUtils):
         self.next_url_base = None
         self.base_url = "https://api.threatstream.com"
         self.intel_url_part = "/api/v2/intelligence/"
+        self.import_url_part = "/api/v1/intelligence/"
         self.creds_url_part = "username=%s&api_key=%s" % (api_user, api_key)
+        self.import_url = '%s%s?%s' % (self.base_url, self.import_url_part, self.creds_url_part)
         self.min_confidence = min_confidence
         self.last_modified_days = last_modified_days
         self.results_limit = results_limit
@@ -93,3 +97,29 @@ class ThreatStream(AbstractLogUtils):
             results.extend(json_data.get('objects'))
             next_url = json_data.get('meta').get('next')
         return results
+
+    def import_iocs(self, import_file, confidence=100, trust_confidence=False, severity='very-high',
+                    classification='public'):
+        """
+        Import IOCs from a file into ThreatStream.
+        :param import_file: IOCs in a CSV with headers: <icategory>,itype,confidence,tags
+        :param confidence: confidence level; defaults to 100
+        :param trust_confidence: whether or not to implicitly trust the submitted confidence level; defaults to False
+        :param severity: severity level; defaults to very-high (options are low, medium, high, very-high)
+        :param classification: classification; defaults to public (options are public, private)
+        :return: result of submission
+        """
+        global_settings = {'confidence': confidence, 'severity': severity, 'classification': classification}
+        indicators_json = {'objects': []}
+        if trust_confidence:
+            indicators_json['meta'] = {'source_confidence_weight': 100}
+        lines, headers_map = CSVUtils.read_csv(import_file)
+        for line in lines:
+            tmp_dict = {}
+            for k, v in headers_map.items():
+                tmp_dict[k] = line[v]
+            indicators_json['objects'].append(tmp_dict)
+        self.log("[*] Importing IOCs from file %s into ThreatStream..." % import_file)
+        result = requests.patch(self.import_url, headers={'Content-Type': 'application/json'}, params=global_settings,
+                                data=json.dumps(indicators_json))
+        return result
