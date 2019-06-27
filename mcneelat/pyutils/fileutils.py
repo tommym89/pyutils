@@ -1,6 +1,7 @@
 import csv
 import os
 import tarfile
+from zipfile import ZipFile
 
 
 class CSVUtils:
@@ -91,5 +92,16 @@ class ArchiveUtils:
                     tar.add(source, arcname=os.path.basename(source))
                 elif os.path.isfile(source):
                     tar.add(source)
+                else:
+                    print("[*] Warning, not adding nonexistent object %s to archive..." % source)
+
+    @staticmethod
+    def create_zip(sources, output_file):
+        with ZipFile(output_file, 'w') as zip:
+            for source in sources:
+                if os.path.isdir(source):
+                    zip.write(source, arcname=os.path.basename(source))
+                elif os.path.isfile(source):
+                    zip.write(source)
                 else:
                     print("[*] Warning, not adding nonexistent object %s to archive..." % source)
