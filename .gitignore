@@ -7,3 +7,4 @@ app.py
 build
 dist
 mcneelat_pyutils.egg-info
+indicators.json
