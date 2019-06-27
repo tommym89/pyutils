@@ -22,6 +22,7 @@ class ThreatStream(AbstractLogUtils):
         :param min_confidence: minimum confidence for IOCs to look for
         :param last_modified_days: number of days ago IOCs must have been modified in order to include in results
         :param results_limit: limit of results from API queries; 0 = unlimited
+        :param verbose: whether or not to print log messages
         """
         self.next_url_base = None
         self.base_url = "https://api.threatstream.com"
@@ -61,6 +62,7 @@ class ThreatStream(AbstractLogUtils):
         """
         last_modified = (dt.today() - timedelta(days=self.last_modified_days)).strftime("%Y-%m-%dT00:00:00Z")
         next_url = "%s&modified_ts__gte=%s&value=%s" % (self.next_url_base, last_modified, test_object)
+        self.log("[*] Search for details on object %s..." % test_object)
         try:
             json_data = requests.get(self.base_url + next_url).json()
         except ValueError:

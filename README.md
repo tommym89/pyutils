@@ -4,6 +4,7 @@
     * confutils
     * crowdstrike
     * dbutils
+    * digitalshadows
     * directoryutils
     * dnsutils
     * fileutils

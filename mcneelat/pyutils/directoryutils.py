@@ -1,18 +1,21 @@
+from mcneelat.pyutils.confutils import AbstractLogUtils
 import ldap
 
 
-class DirectoryActions:
+class DirectoryActions(AbstractLogUtils):
     """
     Class containing methods to work with an LDAP server to perform login actions and resolve details about users.
     """
 
-    def __init__(self, conf_data):
+    def __init__(self, conf_data, verbose=True):
         """
         Constructor.
         :param conf_data: dictionary containing configuration data for the app
+        :param verbose: whether or not to print log messages
         """
         ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
         self.conf_data = conf_data
+        AbstractLogUtils.__init__(self, verbose)
 
     def login(self, employeeid, password):
         """
@@ -21,6 +24,7 @@ class DirectoryActions:
         :param password: password of user trying to log in
         :return: either details of user or False on failure
         """
+        self.log('[*] Attempting login with ID %s...' % employeeid)
         con = ldap.initialize(self.conf_data['LDAP_CONN_INFO']['server'])
         dn = self.conf_data['LDAP_CONN_INFO']['dn_base'] % employeeid
         try:
@@ -36,6 +40,7 @@ class DirectoryActions:
         Log into the LDAP server using a service account, which will allow us to search instead of only log in.
         :return: LDAP connection object or False on failure
         """
+        self.log('[*] Logging in with service account %s...' % self.conf_data['LDAP_SERVICE_ACCOUNT']['dn'])
         con = ldap.initialize(self.conf_data['LDAP_CONN_INFO']['server'])
         try:
             con.simple_bind_s(self.conf_data['LDAP_SERVICE_ACCOUNT']['dn'],

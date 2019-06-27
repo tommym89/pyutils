@@ -1,7 +1,7 @@
 import re
 
 
-class PyNetAddr(object):
+class PyNetAddr:
     """This is a pure Python implementation of the Perl module NetAddr::IP."""
 
     ip_re = r'^([0-9]{1,3}\.){3}[0-9]{1,3}$'
