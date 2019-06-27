@@ -12,7 +12,6 @@ class AbstractDBUtils(AbstractLogUtils):
         :param verbose: whether or not to print log messages
         """
         self.dbconn = dbconn
-        self.verbose = verbose
         self.cursor = self.dbconn.cursor()
         AbstractLogUtils.__init__(self, verbose)
 
@@ -48,7 +47,7 @@ class AbstractDBUtils(AbstractLogUtils):
         :return: None
         """
         for s in sql:
-            self.runsql(s, False)
+            self.runsql(s, commit=False)
         self.dbconn.commit()
 
     def close(self):
