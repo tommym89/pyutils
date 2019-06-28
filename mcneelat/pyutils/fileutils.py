@@ -80,12 +80,18 @@ class ArchiveUtils:
         Write a set of files and/or directories to a tar file.
         :param sources: list of files and/or directories to add to the archive
         :param output_file: file to write archived contents to
-        :param compression: options are None (which is the default), gz, or bz2
+        :param compression: options are None (which is the default), gz, bz2, or xz
         :return: None
         """
+        # add .tar extension to filename if necessary
+        if not output_file.endswith('.tar'):
+            output_file = '%s.tar' % output_file
         write_mode = 'w:'
         if compression is not None:
             write_mode = 'w:%s' % compression
+            # add compression extension to filename if necessary
+            if not output_file.endswith('.%s' % compression):
+                output_file = '%s.%s' % (output_file, compression)
         with tarfile.open(output_file, write_mode) as tar:
             for source in sources:
                 if os.path.isdir(source):
@@ -96,12 +102,45 @@ class ArchiveUtils:
                     print("[*] Warning, not adding nonexistent object %s to archive..." % source)
 
     @staticmethod
+    def extract_tar(input_file, output_dir):
+        """
+        Extract the contents of a tar file to a directory.
+        :param input_file: tar file to extract from
+        :param output_dir: directory to extract files to
+        :return: None
+        """
+        with tarfile.open(input_file, 'r') as tar:
+            tar.extractall(path=output_dir)
+
+    @staticmethod
     def create_zip(sources, output_file):
+        """
+        Write a set of files and/or directories to a zip file.
+        :param sources: list of files and/or directories to add to the archive
+        :param output_file: file to write archived contents to
+        :return: None
+        """
+        # add .zip extension to filename if necessary
+        if not output_file.endswith('.zip'):
+            output_file = '%s.zip' % output_file
         with ZipFile(output_file, 'w') as zip:
             for source in sources:
                 if os.path.isdir(source):
-                    zip.write(source, arcname=os.path.basename(source))
+                    for root, dirs, files in os.walk(source):
+                        for file in files:
+                            zip.write(os.path.join(root, file))
                 elif os.path.isfile(source):
                     zip.write(source)
                 else:
                     print("[*] Warning, not adding nonexistent object %s to archive..." % source)
+
+    @staticmethod
+    def extract_zip(input_file, output_dir):
+        """
+        Extract the contents of a zip file to a directory.
+        :param input_file: zip file to extract from
+        :param output_dir: directory to extract files to
+        :return:
+        """
+        with ZipFile(input_file, 'r') as zip:
+            zip.extractall(path=output_dir)
