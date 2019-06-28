@@ -1,7 +1,7 @@
 import csv
 import os
 import tarfile
-from zipfile import ZipFile
+from zipfile import is_zipfile, ZipFile
 
 
 class CSVUtils:
@@ -107,10 +107,13 @@ class ArchiveUtils:
         Extract the contents of a tar file to a directory.
         :param input_file: tar file to extract from
         :param output_dir: directory to extract files to
-        :return: None
+        :return: True on success, False otherwise
         """
+        if not tarfile.is_tarfile(input_file):
+            return False
         with tarfile.open(input_file, 'r') as tar:
             tar.extractall(path=output_dir)
+        return True
 
     @staticmethod
     def create_zip(sources, output_file):
@@ -140,7 +143,10 @@ class ArchiveUtils:
         Extract the contents of a zip file to a directory.
         :param input_file: zip file to extract from
         :param output_dir: directory to extract files to
-        :return:
+        :return: True on success, False otherwise
         """
+        if not is_zipfile(input_file):
+            return False
         with ZipFile(input_file, 'r') as zip:
             zip.extractall(path=output_dir)
+        return True
