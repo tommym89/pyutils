@@ -51,6 +51,7 @@ class ThreatStream(AbstractLogUtils):
         :param test_object: indicator to check
         :return: True if malicious, False if not found active in ThreatStream
         """
+        self.log('[*] Checking if object %s is a threat...' % test_object)
         result = self.get_ioc_details(test_object)
         return result is not None
 
@@ -62,7 +63,7 @@ class ThreatStream(AbstractLogUtils):
         """
         last_modified = (dt.today() - timedelta(days=self.last_modified_days)).strftime("%Y-%m-%dT00:00:00Z")
         next_url = "%s&modified_ts__gte=%s&value=%s" % (self.next_url_base, last_modified, test_object)
-        self.log("[*] Search for details on object %s..." % test_object)
+        self.log("[*] Searching for details on object %s..." % test_object)
         try:
             json_data = requests.get(self.base_url + next_url).json()
         except ValueError:
