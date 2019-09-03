@@ -10,8 +10,8 @@ def load_conf(conf_file, verbose=True):
     """
     if verbose:
         print("[*] Reading config from '%s'" % conf_file)
-    with open(conf_file) as f:
-        conf_data = json.loads(f.read())
+    with open(conf_file, 'r') as f:
+        conf_data = json.load(f)
     return conf_data
 
 
