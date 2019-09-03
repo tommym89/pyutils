@@ -60,7 +60,9 @@ class PyNetAddr:
     def calc_network(address, mask):
         """
         Calculate the network address from the set IP address and subnet mask.
-        :return: None
+        :param address: IP address
+        :param mask: subnet mask
+        :return: network address
         """
         addr_splitter = address.split('.')
         mask_splitter = mask.split('.')
@@ -73,7 +75,9 @@ class PyNetAddr:
     def calc_broadcast(address, mask):
         """
         Calculate the broadcast address from the set IP address and subnet mask.
-        :return: None
+        :param address: IP address
+        :param mask: subnet mask
+        :return: broadcast address
         """
         network = PyNetAddr.calc_network(address, mask)
         network_splitter = network.split('.')
@@ -103,7 +107,9 @@ class PyNetAddr:
     def calc_range(network, broadcast):
         """
         Calculate the range of addresses in the subnet.
-        :return: None
+        :param network: network address
+        :param broadcast: broadcast address
+        :return: range of addresses in subnet
         """
         return network + " - " + broadcast
 
@@ -112,7 +118,7 @@ class PyNetAddr:
         """
         Calculate the CIDR mask from the given full notation subnet mask.
         :param mask: full notation subnet mask (i.e. 255.255.255.0)
-        :return: None
+        :return: subnet mask in CIDR notation (i.e. /24)
         """
         mask_splitter = mask.split('.')
         cidr_mask = 0
@@ -126,7 +132,7 @@ class PyNetAddr:
         """
         Calculate the full subnet mask from the given CIDR mask.
         :param cidr_mask: CIDR mask bits
-        :return: None
+        :return: full notation subnet mask
         """
         cidr_bits = '1' * cidr_mask + '0' * (32 - cidr_mask)
         cidr_bits_arr = [str(int(cidr_bits[:8], 2)), str(int(cidr_bits[8:16], 2)), str(int(cidr_bits[16:24], 2)),
@@ -152,14 +158,10 @@ class PyNetAddr:
         total2 = int(mask2_splitter[0]) + int(mask2_splitter[1]) + int(mask2_splitter[2]) + int(mask2_splitter[3])
         if total1 < total2:
             netaddr3 = PyNetAddr(network2.network, network1.mask)
-            # print "Network 1 is: %s, network 2 with same subnet is: %s" % \
-            # (network1.network, netaddr3.network)
             if network1.network == netaddr3.network:
                 return True
         elif total2 < total1:
             netaddr3 = PyNetAddr(network1.network, network2.mask)
-            # print "Network 2 is: %s, network 1 with same subnet is: %s" % \
-            # (network2.network, netaddr3.network)
             if network2.network == netaddr3.network:
                 return True
         return False
@@ -172,9 +174,7 @@ class PyNetAddr:
         :return: sorted list of summarized PyNetAddr objects
         """
         # make sure we've actually received a list of PyNetAddr objects
-        for sn in subnets:
-            if not isinstance(sn, PyNetAddr):
-                subnets.remove(sn)
+        subnets = [sn for sn in subnets if isinstance(sn, PyNetAddr)]
         if len(subnets) == 0:
             return False
         sorted_nets = sorted(subnets, key=lambda sn: sn.cidr_mask)
@@ -205,13 +205,13 @@ class PyNetAddr:
             return False
         if mask is None:
             mask = PyNetAddr.calc_full_mask(int(address.split("/")[1]))
-        if self.is_valid_mask(mask):
+        if PyNetAddr.is_valid_mask(mask):
             self.mask = mask
             self.cidr_mask = PyNetAddr.calc_cidr_mask(self.mask)
         else:
             print("Error, invalid subnet mask!")
             return False
         self.network = PyNetAddr.calc_network(self.address, self.mask)
-        self.broadcast = PyNetAddr.calc_broadcast()
-        self.range = PyNetAddr.calc_range()
+        self.broadcast = PyNetAddr.calc_broadcast(self.address, self.mask)
+        self.range = PyNetAddr.calc_range(self.network, self.broadcast)
         return True
