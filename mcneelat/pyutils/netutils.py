@@ -36,7 +36,8 @@ class PyNetAddr:
             return True
         return False
 
-    def is_valid_mask(self, mask):
+    @staticmethod
+    def is_valid_mask(mask):
         """
         Check if this is a valid subnet mask.
         :param mask: subnet mask in full notation (i.e. 255.255.255.0)
@@ -51,29 +52,32 @@ class PyNetAddr:
                 # check for next octet as <= current
                 if i > 0 and tmp_i > int(splitter[i - 1]):
                     return False
-            self.calc_cidr_mask(mask)
+            # PyNetAddr.calc_cidr_mask(mask)
             return True
         return False
 
-    def calc_network(self):
+    @staticmethod
+    def calc_network(address, mask):
         """
         Calculate the network address from the set IP address and subnet mask.
         :return: None
         """
-        addr_splitter = self.address.split('.')
-        mask_splitter = self.mask.split('.')
+        addr_splitter = address.split('.')
+        mask_splitter = mask.split('.')
         network_arr = []
         for i in range(0, len(addr_splitter)):
             network_arr.append(str(int(addr_splitter[i]) & int(mask_splitter[i])))
-        self.network = '.'.join(network_arr)
+        return '.'.join(network_arr)
 
-    def calc_broadcast(self):
+    @staticmethod
+    def calc_broadcast(address, mask):
         """
         Calculate the broadcast address from the set IP address and subnet mask.
         :return: None
         """
-        network_splitter = self.network.split('.')
-        mask_splitter = self.mask.split('.')
+        network = PyNetAddr.calc_network(address, mask)
+        network_splitter = network.split('.')
+        mask_splitter = mask.split('.')
         i = len(mask_splitter) - 1
         breaker = False
         while i >= 0 and not breaker:
@@ -93,28 +97,32 @@ class PyNetAddr:
 
             network_splitter[i] = str(int(''.join(tmp_octet), 2))
             i -= 1
-        self.broadcast = '.'.join(network_splitter)
+        return '.'.join(network_splitter)
 
-    def calc_range(self):
+    @staticmethod
+    def calc_range(network, broadcast):
         """
         Calculate the range of addresses in the subnet.
         :return: None
         """
-        self.range = self.network + " - " + self.broadcast
+        return network + " - " + broadcast
 
-    def calc_cidr_mask(self, mask):
+    @staticmethod
+    def calc_cidr_mask(mask):
         """
         Calculate the CIDR mask from the given full notation subnet mask.
         :param mask: full notation subnet mask (i.e. 255.255.255.0)
         :return: None
         """
         mask_splitter = mask.split('.')
-        self.cidr_mask = 0
+        cidr_mask = 0
         for i in range(0, len(mask_splitter)):
             mask_octet = format(int(str(bin(int(mask_splitter[i])))[2:], 2), '{fill}{width}b'.format(width=8, fill=0))
-            self.cidr_mask += mask_octet.count('1')
+            cidr_mask += mask_octet.count('1')
+        return cidr_mask
 
-    def calc_full_mask(self, cidr_mask):
+    @staticmethod
+    def calc_full_mask(cidr_mask):
         """
         Calculate the full subnet mask from the given CIDR mask.
         :param cidr_mask: CIDR mask bits
@@ -123,7 +131,7 @@ class PyNetAddr:
         cidr_bits = '1' * cidr_mask + '0' * (32 - cidr_mask)
         cidr_bits_arr = [str(int(cidr_bits[:8], 2)), str(int(cidr_bits[8:16], 2)), str(int(cidr_bits[16:24], 2)),
                          str(int(cidr_bits[24:], 2))]
-        self.mask = '.'.join(cidr_bits_arr)
+        return '.'.join(cidr_bits_arr)
 
     @staticmethod
     def within(network1, network2):
@@ -196,14 +204,14 @@ class PyNetAddr:
             print("Error, invalid IP address!")
             return False
         if mask is None:
-            self.calc_full_mask(int(address.split("/")[1]))
-            mask = self.mask
+            mask = PyNetAddr.calc_full_mask(int(address.split("/")[1]))
         if self.is_valid_mask(mask):
             self.mask = mask
+            self.cidr_mask = PyNetAddr.calc_cidr_mask(self.mask)
         else:
             print("Error, invalid subnet mask!")
             return False
-        self.calc_network()
-        self.calc_broadcast()
-        self.calc_range()
+        self.network = PyNetAddr.calc_network(self.address, self.mask)
+        self.broadcast = PyNetAddr.calc_broadcast()
+        self.range = PyNetAddr.calc_range()
         return True
